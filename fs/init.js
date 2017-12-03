@@ -52,12 +52,13 @@ let getInfo = function() {
 
 // temperature/humidity loop, 1000=1s,30000=30s,  60000=1m
 Timer.set(30000, true, function() {
+
+  // temperature
   if (n === 0) {
     if ((n = searchSens()) === 0) {
       print('No device found');
     }
   }
-
   for (let i = 0; i < n; i++) {
     let t = getTemp(ow, rom[i]);
     if (isNaN(t)) {
@@ -73,9 +74,9 @@ Timer.set(30000, true, function() {
             celcius: t,
             timestamp: timestamp()
           },
-          deviceId: deviceId,
-          deviceType: deviceType
-        }
+        },
+        deviceId: deviceId,
+        deviceType: deviceType
       });
       let ok = MQTT.pub(topic, message, 1);
       print('Published:', ok, topic, '->', message)
