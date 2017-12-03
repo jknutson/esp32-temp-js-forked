@@ -1,5 +1,5 @@
-author: mongoose-os
-description: A JS-enabled demo Mongoose OS firmware
+author: John Knutson
+description: app to monitor a kegerator
 # arch: PLATFORM
 version: 1.0
 manifest_version: 2017-05-18
@@ -8,34 +8,19 @@ modules_version: ${mos.version}
 mongoose_os_version: ${mos.version}
 
 config_schema:
-  - ["mqtt.server", "iot.eclipse.org:1883"]
   - ["i2c.enable", true]
   - ["pins", "o", {title: "Pins layout"}]
-  - ["pins.led", "i", -1, {title: "LED GPIO pin"}]
-  - ["pins.button", "i", -1, {title: "Button GPIO pin"}]
+  - ["pins.door", "i", -1, {title: "Door sensor GPIO pin"}]
+  - ["pins.temp", "i", -1, {title: "Temperature sensor GPIO pin"}]
+  - ["pins.builtin", "i", -1, {title: "Builtin button"}]
 
 conds:
   - when: mos.platform == "esp32"
     apply:
       config_schema:
-        - ["pins.led", 21]
-        - ["pins.button", 0]
-  - when: mos.platform == "esp8266"
-    apply:
-      config_schema:
-        - ["pins.led", 2]
-        - ["pins.button", 0]
-  - when: mos.platform == "cc3200"
-    apply:
-      config_schema:
-        - ["pins.led", 64]
-        - ["pins.button", 15]
-  - when: mos.platform == "cc3220"
-    apply:
-      config_schema:
-        - ["pins.led", 64]
-        - ["pins.button", 15]
-
+        - ["pins.door", 34]
+        - ["pins.temp", 14]
+        - ["pins.builtin", 0]
 tags:
   - js
 
@@ -48,4 +33,5 @@ filesystem:
 libs:
   - origin: https://github.com/mongoose-os-libs/js-demo-bundle
   - origin: https://github.com/mongoose-os-libs/arduino-onewire
+  - origin: https://github.com/mongoose-os-libs/adc
 
