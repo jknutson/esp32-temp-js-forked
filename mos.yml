@@ -39,8 +39,13 @@ conds:
 tags:
   - js
 
+sources:
+  - src
+
 filesystem:
   - fs
 
 libs:
   - origin: https://github.com/mongoose-os-libs/js-demo-bundle
+  - origin: https://github.com/mongoose-os-libs/arduino-onewire
+
