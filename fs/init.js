@@ -102,8 +102,32 @@ Timer.set(30000, true, function() {
 
 }, null);
 
+// let lastDoorStatus = 1; // 1=closed
 Timer.set(5000 , true , function() {
-  let doorStatus = GPIO.read(doorPin);
+//   doorStatus = GPIO.read(doorPin);
+//   let doorEvent = 'null';
+//   if (doorStatus !== lastDoorStatus) {
+//     // door state change
+//     if (doorStatus) {
+//       // door was open, is now closed
+//       doorEvent = 'doorClosed';
+//     } else {
+//       doorEvent = 'doorOpened';
+//     }
+//     let message = JSON.stringify({
+//       data: {
+//         doorEvent: doorEvent,
+//         doorStatus: doorStatus,
+//         pin: doorPin,
+//         timestamp: timestamp()
+//       },
+//       deviceId: deviceId,
+//       deviceType: deviceType
+//     });
+//     let ok = MQTT.pub(topic, message, 1);
+//     print('Published:', ok, topic, '->', message);
+//     lastDoorStatus = doorStatus;
+//   }
   let message = JSON.stringify({
     data: {
       doorStatus: doorStatus,
