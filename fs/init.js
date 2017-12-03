@@ -76,7 +76,8 @@ Timer.set(30000, true, function() {
           },
         },
         deviceId: deviceId,
-        deviceType: deviceType
+        deviceType: deviceType,
+        eventType: 'temperature'
       });
       let ok = MQTT.pub(topic, message, 1);
       print('Published:', ok, topic, '->', message)
@@ -97,7 +98,8 @@ Timer.set(30000, true, function() {
       timestamp: timestamp()
     },
     deviceId: deviceId,
-    deviceType: deviceType
+    deviceType: deviceType,
+    eventType: 'humidity'
   });
   let ok = MQTT.pub(topic, message, 1);
   print('Published:', ok, topic, '->', message)
@@ -113,7 +115,8 @@ Timer.set(5000 , true , function() {
       timestamp: timestamp()
     },
     deviceId: deviceId,
-    deviceType: deviceType
+    deviceType: deviceType,
+    eventType: 'door'
   });
   let ok = MQTT.pub(topic, message, 1);
   print('Published:', ok, topic, '->', message)
