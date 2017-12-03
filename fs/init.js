@@ -7,7 +7,9 @@ load('api_timer.js');
 load('api_arduino_onewire.js');
 load('ds18b20.js');
 
+let timeFormat = '%FT%T%z';
 let oneWirePin = 14;
+let doorPin = 34;
 let led = Cfg.get('pins.led');
 let button = Cfg.get('pins.button');
 let topic = '/devices/' + Cfg.get('device.id') + '/events';
@@ -49,11 +51,25 @@ let getInfo = function() {
   });
 };
 
-// Blink built-in LED every second
 GPIO.set_mode(led, GPIO.MODE_OUTPUT);
-Timer.set(1000 /* 1 sec */, true /* repeat */, function() {
-  let value = GPIO.toggle(led);
-  print(value ? 'Tick' : 'Tock', 'uptime:', Sys.uptime(), getInfo());
+GPIO.set_mode(doorPin, GPIO.MODE_INPUT);
+/*
+{
+  "data": {
+    "loop": 1,
+    "sensor": "legopi",
+    "temperature": {
+      "celcius": 0.125,
+      "fahrenheit": 32.225
+    },
+    "timestamp": "2017-12-01T23:31:27.104806"
+  },
+  "device_id": "legopi",
+  "timestamp": "2017-12-01T23:31:27.104806"
+}
+*/
+//Timer.set(60000 /* 1 min */, true /* repeat */, function() {
+Timer.set(1000 /* 1 min */, true /* repeat */, function() {
   if (n === 0) {
     if ((n = searchSens()) === 0) {
       print('No device found');
@@ -67,16 +83,53 @@ Timer.set(1000 /* 1 sec */, true /* repeat */, function() {
       break;
     } else {
       print('Sensor#', i, 'Temperature:', t, '*C');
+      let uts = Timer.now();
+      let ts = Timer.fmt(timeFormat, uts);
       let f_t = t * 9 / 5 + 32;
       let message = JSON.stringify({
-        fahrenheit: f_t,
-        celcius: t
+        data: {
+          sensor: i,
+          temperature: {
+            fahrenheit: f_t,
+            celcius: t,
+            timestamp: ts
+          }
+        }
       });
       let ok = MQTT.pub(topic, message, 1);
       print('Published:', ok, topic, '->', message)
     }
   }
 
+}, null);
+
+
+// Timer.set(1000 /* 1 sec */, true /* repeat */, function() {
+//   // door stuff
+//   let d = new Date();
+//   let ts = d.toISOString();
+//   let doorStatus = GPIO.read(doorPin);
+//   let message = JSON.stringify({
+//     data: {
+//       doorStatus: doorStatus,
+//       pin: doorPin,
+//       timestamp: ts
+//     }
+//   });
+//   let ok = MQTT.pub(topic, message, 1);
+//   print('Published:', ok, topic, '->', message)
+// }, null);
+
+GPIO.set_button_handler(doorPin, GPIO.PULL_UP, GPIO.INT_EDGE_NEG, 200, function() {
+  // door stuff
+  // let doorStatus = GPIO.read(doorPin);
+  let message = JSON.stringify({
+    message: "doorClosed",
+    value: 1,
+    pin: doorPin
+  });
+  let ok = MQTT.pub(topic, message, 1);
+  print('Published:', ok, topic, '->', message)
 }, null);
 
 // Publish to MQTT topic on a button press. Button is wired to GPIO pin 0
