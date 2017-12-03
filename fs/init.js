@@ -4,16 +4,20 @@ load('api_mqtt.js');
 load('api_net.js');
 load('api_sys.js');
 load('api_timer.js');
-load("api_adc.js");
+load('api_adc.js');
+load('api_spi.js');
 load('api_arduino_onewire.js');
 load('ds18b20.js');
 
 let timeFormat = '%FT%T%z';
 // TODO make configs work
-let doorPin = 34;
+// let doorPin = 34;
+let doorPin = 4;
 let oneWirePin = 14;
 let builtinPin = 0;
 let humidPin = 33;
+let distancePin = 19;
+let distanceClock = 18;
 let deviceId = Cfg.get('device.id');
 let deviceType = 'esp32';
 let topic = '/devices/' + deviceId + '/events';
