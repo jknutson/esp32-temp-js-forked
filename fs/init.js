@@ -67,14 +67,12 @@ Timer.set(30000, true, function() {
     } else {
       let f_t = t * 9 / 5 + 32;
       let message = JSON.stringify({
-        data: {
-          sensor: i,
-          temperature: {
-            fahrenheit: f_t,
-            celcius: t,
-            timestamp: timestamp()
-          },
+        sensor: i,
+        temperature: {
+          fahrenheit: f_t,
+          celcius: t
         },
+        timestamp: timestamp(),
         deviceId: deviceId,
         deviceType: deviceType,
         eventType: 'temperature'
@@ -92,11 +90,9 @@ Timer.set(30000, true, function() {
   let av = 0.0048875*relativeHumidity;
   let res = (av - 0.86) / 0.03;
   let message = JSON.stringify({
-    data: {
-      sensor: 'HIH4000',
-      humidity: res,
-      timestamp: timestamp()
-    },
+    sensor: 'HIH4000',
+    humidity: res
+    timestamp: timestamp(),
     deviceId: deviceId,
     deviceType: deviceType,
     eventType: 'humidity'
@@ -109,11 +105,9 @@ Timer.set(30000, true, function() {
 Timer.set(5000 , true , function() {
   let doorStatus = GPIO.read(doorPin);
   let message = JSON.stringify({
-    data: {
-      doorStatus: doorStatus,
-      pin: doorPin,
-      timestamp: timestamp()
-    },
+    doorStatus: doorStatus,
+    pin: doorPin
+    timestamp: timestamp(),
     deviceId: deviceId,
     deviceType: deviceType,
     eventType: 'door'
