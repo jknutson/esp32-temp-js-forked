@@ -10,26 +10,22 @@ load('ds18b20.js');
 
 let timeFormat = '%FT%T%z';
 // TODO make configs work
-// let doorPin = 34;
 let doorPin = 4;
-let doorPinNO = 16;
 let oneWirePin = 14;
-let builtinPin = 0;
 let humidPin = 33;
 let deviceId = Cfg.get('device.id');
 let deviceType = 'esp32';
 let topic = '/devices/' + deviceId + '/events';
-let ttl = 604800; // one week in seconds
 
 let ow = OneWire.create(oneWirePin);
 let n = 0;
 let rom = ['01234567'];
 
 GPIO.set_mode(doorPin, GPIO.MODE_INPUT);
-GPIO.set_mode(doorPinNO, GPIO.MODE_INPUT);
+let enableAnalog = ADC.enable(humidPin);
 
 let searchSens = function() {
-  let i = 0;
+ let i = 0;
   ow.target_search(DEVICE_FAMILY.DS18B20);
 
   while (ow.search(rom[i], 0/* Normal search mode */) === 1) {
@@ -42,24 +38,15 @@ let searchSens = function() {
   return i;
 };
 
-let timestamp = function() {
-  return Timer.fmt(timeFormat, Timer.now());
-};
-
+// function to return formatted timestamp and ttl value for dynamo auto-expiry
 let timestamp_ttl = function() {
   let now = Timer.now();
+  let ttl = 604800; // one week in seconds
   return [Timer.fmt(timeFormat, Timer.now()), now + ttl];
 };
 
-let getInfo = function() {
-  return JSON.stringify({
-    total_ram: Sys.total_ram(),
-    free_ram: Sys.free_ram()
-  });
-};
-
 // temperature/humidity loop, 1000=1s,30000=30s,  60000=1m
-Timer.set(1000, true, function() {
+Timer.set(5000, true, function() {
 
   // temperature
   if (n === 0) {
@@ -93,11 +80,10 @@ Timer.set(1000, true, function() {
   }
 
   // humidity
-  let enableAnalog = ADC.enable(humidPin);
   let relativeHumidity = ADC.read(humidPin);
   // TODO: this math most likely needs adjustment
   // see: http://www.instructables.com/id/HIH4000-Humidity-Hygrometer-Sensor-Tutorial/
-  let av = 0.0048875*relativeHumidity;
+  let av = 0.0048875 * relativeHumidity;
   let res = (av - 0.86) / 0.03;
   let ts = timestamp_ttl();
   let message = JSON.stringify({
@@ -112,9 +98,6 @@ Timer.set(1000, true, function() {
   let ok = MQTT.pub(topic, message, 1);
   print('Published:', ok, topic, '->', message)
 
-}, null);
-
-Timer.set(1000 , true , function() {
   let doorStatus = GPIO.read(doorPin);
   let ts = timestamp_ttl();
   let message = JSON.stringify({
@@ -130,40 +113,6 @@ Timer.set(1000 , true , function() {
   print('Published:', ok, topic, '->', message)
 }, null);
 
-
-GPIO.set_button_handler(doorPin, GPIO.PULL_UP, GPIO.INT_EDGE_NEG, 1000, function(x) {
-  let doorStatus = GPIO.read(doorPin);
-  let ts = timestamp_ttl();
-  let message = JSON.stringify({
-    doorStatus: doorStatus,
-    pin: x,
-    timestamp: ts[0],
-    expires: ts[1],
-    deviceId: deviceId,
-    deviceType: deviceType,
-    eventType: 'doorEvent'
-  });
-  let ok = MQTT.pub(topic, message, 1);
-  print('Published:', ok, topic, '->', message);
-}, null);
-
-// this isnt working, need some schematics help with my inverter
-// GPIO.set_button_handler(doorPinNO, GPIO.PULL_DOWN, GPIO.INT_EDGE_NEG, 200, function(x) {
-//   let doorStatus = GPIO.read(doorPinNO);
-//   let message = JSON.stringify({
-//     doorStatus: doorStatus,
-//     pin: x,
-//     timestamp: ts[0],
-//     deviceId: deviceId,
-//     deviceType: deviceType,
-//     eventType: 'doorEvent',
-//     eventValue: 'doorOpened'
-//   });
-//   let ok = MQTT.pub(topic, message, 1);
-//   print('Published:', ok, topic, '->', message);
-// }, null);
-
-
 Net.setStatusEventHandler(function(ev, arg) {
   let evs = '???';
   if (ev === Net.STATUS_DISCONNECTED) {
@@ -175,5 +124,5 @@ Net.setStatusEventHandler(function(ev, arg) {
   } else if (ev === Net.STATUS_GOT_IP) {
     evs = 'GOT_IP';
   }
-  print('== Net event:', ev, evs);
+  print('== Net event:', ev, evs, arg);
 }, null);
