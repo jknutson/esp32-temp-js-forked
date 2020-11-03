@@ -1,6 +1,7 @@
+---
 author: John Knutson
 description: app to monitor a kegerator
-# arch: PLATFORM
+platform: esp32
 version: 1.0
 manifest_version: 2017-05-18
 libs_version: ${mos.version}
@@ -9,18 +10,22 @@ mongoose_os_version: ${mos.version}
 
 config_schema:
   - ["i2c.enable", true]
+  - ["sys.tz_spec", "CST6CDT6,M4.1.0/02:00:00,M10.5.0/02:00:00"]
   - ["pins", "o", {title: "Pins layout"}]
   - ["pins.door", "i", -1, {title: "Door sensor GPIO pin"}]
   - ["pins.temp", "i", -1, {title: "Temperature sensor GPIO pin"}]
   - ["pins.builtin", "i", -1, {title: "Builtin button"}]
+  - ["datadog", "o", {title: "datadog config"}]
+  - ["datadog.api_key", "s", {title: "datadog API key"}]
 
 conds:
   - when: mos.platform == "esp32"
     apply:
       config_schema:
-        - ["pins.door", 34]
+        - ["pins.humidity", 33]
         - ["pins.temp", 14]
         - ["pins.builtin", 0]
+
 tags:
   - js
 
@@ -31,39 +36,21 @@ filesystem:
   - fs
 
 libs:
-  - origin: https://github.com/mongoose-os-libs/aws
   - origin: https://github.com/mongoose-os-libs/ca-bundle
   - origin: https://github.com/mongoose-os-libs/dash
   - origin: https://github.com/mongoose-os-libs/dht
-  - origin: https://github.com/mongoose-os-libs/gcp
-  - origin: https://github.com/mongoose-os-libs/http-server
   - origin: https://github.com/mongoose-os-libs/i2c
   - origin: https://github.com/mongoose-os-libs/mjs
-  - origin: https://github.com/mongoose-os-libs/ota-aws-shadow
-  - origin: https://github.com/mongoose-os-libs/ota-http-client
-  - origin: https://github.com/mongoose-os-libs/ota-http-server
-  - origin: https://github.com/mongoose-os-libs/rpc-loopback
-  - origin: https://github.com/mongoose-os-libs/rpc-mqtt
-  - origin: https://github.com/mongoose-os-libs/rpc-service-config
-  - origin: https://github.com/mongoose-os-libs/rpc-service-fs
-  - origin: https://github.com/mongoose-os-libs/rpc-service-gpio
-  - origin: https://github.com/mongoose-os-libs/rpc-service-i2c
-  - origin: https://github.com/mongoose-os-libs/rpc-service-ota
-  - origin: https://github.com/mongoose-os-libs/rpc-service-wifi
-  - origin: https://github.com/mongoose-os-libs/rpc-uart
   - origin: https://github.com/mongoose-os-libs/spi
   - origin: https://github.com/mongoose-os-libs/vfs-dev-spi-flash
   - origin: https://github.com/mongoose-os-libs/wifi
   - origin: https://github.com/mongoose-os-libs/adc
   - origin: https://github.com/mongoose-os-libs/atca
-  - origin: https://github.com/mongoose-os-libs/bt-service-config
-  - origin: https://github.com/mongoose-os-libs/bt-service-debug
   - origin: https://github.com/mongoose-os-libs/dns-sd
-  - origin: https://github.com/mongoose-os-libs/esp32-touchpad
+  - origin: https://github.com/mongoose-os-libs/sntp
   - origin: https://github.com/mongoose-os-libs/ethernet
-  - origin: https://github.com/mongoose-os-libs/pppos
-  - origin: https://github.com/mongoose-os-libs/pwm
-  - origin: https://github.com/mongoose-os-libs/rpc-gatts
-  - origin: https://github.com/mongoose-os-libs/rpc-service-atca
   - origin: https://github.com/mongoose-os-libs/arduino-onewire
-
+  - origin: https://github.com/mongoose-os-libs/rpc-uart
+  - origin: https://github.com/mongoose-os-libs/rpc-service-config
+  - origin: https://github.com/mongoose-os-libs/rpc-service-fs
+  - origin: https://github.com/mongoose-os-libs/rpc-service-wifi
