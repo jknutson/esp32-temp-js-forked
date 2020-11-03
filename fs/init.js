@@ -8,12 +8,10 @@ load('api_sys.js');
 load('api_timer.js');
 load('ds18b20.js');
 
-// TODO make configs work
-let oneWirePin = 14;
-let humidPin = 33;
 let deviceId = Cfg.get('device.id');
+let oneWirePin = Cfg.get('pins.temp');
 let deviceType = 'esp32';
-let datadogApiKey = '9cbdb848a8d66ca547e0ebe14289cc1a';
+let datadogApiKey = Cfg.get('datadog.api_key');
 
 let ow = OneWire.create(oneWirePin);
 let n = 0;
@@ -32,6 +30,9 @@ let searchSens = function() {
   }
   return i;
 };
+
+print('deviceId:', deviceId)
+print('oneWirePint:', oneWirePin)
 
 // temperature/humidity loop, 1000=1s,30000=30s,  60000=1m
 Timer.set(5000, true, function() {

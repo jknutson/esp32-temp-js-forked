@@ -1,6 +1,21 @@
-# JS-enabled demo Mongoose OS firmware
+# esp32-temp-js
 
-This is the JS demo Mongoose OS app. It gets installed by default at
-[Mongoose OS installation step](https://mongoose-os.com/docs/). It has
-a lot of functionality enabled - cloud integrations, JavaScript engine, etc.
-Its main purpose is to demonstrate the capabilities of Mongoose OS.
+This is a JS application which runs on an ESP32 device with Mongoose OS.
+
+It will read a DS18B20 one-wire temperature sensor and emit the reading to Datadog.
+
+## Setup
+
+```sh
+mos wifi SSID PASS
+```
+
+```sh
+mos config-set datadog.api_key=API_KEY
+```
+
+or
+
+```sh
+make configure
+```
