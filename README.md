@@ -8,9 +8,7 @@ It will read a DS18B20 one-wire temperature sensor and emit the reading to Datad
 
 ```sh
 mos wifi SSID PASS
-```
-
-```sh
+mos put combined-ca.pem ca.pem
 mos config-set datadog.api_key=API_KEY
 ```
 
@@ -18,4 +16,10 @@ or
 
 ```sh
 make configure
+```
+
+then
+
+```sh
+mos call Sys.Reboot
 ```
