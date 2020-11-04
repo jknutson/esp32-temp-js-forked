@@ -7,7 +7,6 @@ load('api_net.js');
 load('api_sys.js');
 load('api_timer.js');
 load('api_ds18b20.js');
-// load('ds18b20.js');
 
 let deviceId = Cfg.get('device.id');
 let oneWirePin = Cfg.get('pins.temp');
