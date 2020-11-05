@@ -6,10 +6,11 @@ load('api_http.js');
 load('api_net.js');
 load('api_sys.js');
 load('api_timer.js');
-load('ds18b20.js');
+load('api_ds18b20.js');
 
 let deviceId = Cfg.get('device.id');
 let oneWirePin = Cfg.get('pins.temp');
+let pollInterval = Cfg.get('interval') * 1000;
 let deviceType = 'esp32';
 let datadogApiKey = Cfg.get('datadog.api_key');
 
@@ -35,18 +36,13 @@ print('deviceId:', deviceId)
 print('oneWirePint:', oneWirePin)
 
 // temperature/humidity loop, 1000=1s,30000=30s,  60000=1m
-Timer.set(5000, true, function() {
+Timer.set(pollInterval, true, function() {
 
   // temperature
-  if (n === 0) {
-    if ((n = searchSens()) === 0) {
-      print('No device found');
-    }
-  }
-  for (let i = 0; i < n; i++) {
-    let t = getTemp(ow, rom[i]);
+  if (DS18B20.connected()) {
+    let t = DS18B20.get();
     if (isNaN(t)) {
-      print('No device found');
+      print('could not read from device: ' + t);
       break;
     } else {
       let payload = {
@@ -71,6 +67,8 @@ Timer.set(5000, true, function() {
         }
       });
     }
+  } else {
+    print('no device found')
   }
 
   /*

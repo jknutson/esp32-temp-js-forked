@@ -11,6 +11,7 @@ mongoose_os_version: ${mos.version}
 config_schema:
   - ["i2c.enable", true]
   - ["sys.tz_spec", "CST6CDT6,M4.1.0/02:00:00,M10.5.0/02:00:00"]
+  - ["interval", "i", 5, {title: "Poll interval (seconds)"}]
   - ["pins", "o", {title: "Pins layout"}]
   - ["pins.door", "i", -1, {title: "Door sensor GPIO pin"}]
   - ["pins.temp", "i", -1, {title: "Temperature sensor GPIO pin"}]
@@ -37,8 +38,9 @@ filesystem:
 
 libs:
   - origin: https://github.com/mongoose-os-libs/ca-bundle
-  - origin: https://github.com/mongoose-os-libs/dash
+  # - origin: https://github.com/mongoose-os-libs/dash
   - origin: https://github.com/mongoose-os-libs/dht
+  - origin: https://github.com/mongoose-os-libs/ds18b20
   - origin: https://github.com/mongoose-os-libs/i2c
   - origin: https://github.com/mongoose-os-libs/mjs
   - origin: https://github.com/mongoose-os-libs/spi
