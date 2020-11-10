@@ -23,8 +23,15 @@ print('oneWirePin:', oneWirePin)
 
 GPIO.set_button_handler(buttonPin, GPIO.PULL_UP, GPIO.INT_EDGE_NEG, 50, function(x) {
   let payload = JSON.stringify({
-    text: 'button on pin ' + buttonPin + ' was pressed',
-    title: 'esp32 device button pressed'
+    text: 'button on pin ' + JSON.stringify(buttonPin) + ' was pressed',
+    title: 'esp32 device button pressed',
+    device_name: deviceId,
+    host: deviceId,
+    tags: [
+      'device:' + deviceId,
+      'deviceType:' + deviceType,
+      'buttonPin:' + buttonPin
+    ]
   });
 
   HTTP.query({
@@ -37,7 +44,7 @@ GPIO.set_button_handler(buttonPin, GPIO.PULL_UP, GPIO.INT_EDGE_NEG, 50, function
       print('datadog post event error:', err);
     }
   });
-});
+}, null);
 
 
 Timer.set(pollInterval, true, function() {
