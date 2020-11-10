@@ -23,6 +23,7 @@ print('oneWirePin:', oneWirePin)
 
 GPIO.set_button_handler(buttonPin, GPIO.PULL_UP, GPIO.INT_EDGE_NEG, 50, function(x) {
   let buttonPinString = JSON.stringify(buttonPin);
+  // TODO: list sensors and include in event payload, plus any other debugging info?
   let payload = JSON.stringify({
     text: 'button on pin ' + buttonPinString + ' was pressed',
     title: 'esp32 device button pressed',
