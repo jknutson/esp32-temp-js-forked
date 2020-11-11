@@ -23,8 +23,8 @@ conds:
   - when: mos.platform == "esp32"
     apply:
       config_schema:
-        - ["pins.humidity", 33]
-        - ["pins.temp", 14]
+        # - ["pins.humidity", 33]
+        - ["pins.temp", 33]
         - ["pins.builtin", 0]
 
 tags:
