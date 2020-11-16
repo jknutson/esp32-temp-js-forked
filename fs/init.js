@@ -15,6 +15,7 @@ let oneWirePin = Cfg.get('pins.temp');
 let buttonPin = 0;  // builtin
 let pollInterval = Cfg.get('interval') * 1000;
 let datadogApiKey = Cfg.get('datadog.api_key');
+let datadogHostName = Cfg.get('datadog.host_name');
 
 let ow = OneWire.create(oneWirePin);
 let n = 0;
@@ -43,8 +44,7 @@ GPIO.set_button_handler(buttonPin, GPIO.PULL_UP, GPIO.INT_EDGE_NEG, 50, function
   let payload = JSON.stringify({
     text: 'button on pin ' + buttonPinString + ' was pressed',
     title: 'esp32 device button pressed',
-    device_name: deviceId,
-    host: deviceId,
+    host: datadogHostName,
     tags: [
       'device:' + deviceId,
       'deviceType:' + deviceType,
@@ -75,12 +75,14 @@ Timer.set(pollInterval, true, function() {
       {
         metric: 'mos.sys.total_ram',
         points: [[now, totalRam]],
+        host: datadogHostName,
         tags: metricTags,
         type: 'gauge'
       },
       {
         metric: 'mos.sys.free_ram',
         points: [[now, freeRam]],
+        host: datadogHostName,
         tags: metricTags,
         type: 'gauge'
       }
@@ -100,6 +102,7 @@ Timer.set(pollInterval, true, function() {
           {
             metric: 'w1_temperature.celcius.gauge',
             points: [[Timer.now(), t]],
+            host: datadogHostName,
             tags: metricTags,
             type: 'gauge'
           }

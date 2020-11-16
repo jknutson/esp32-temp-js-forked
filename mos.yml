@@ -18,12 +18,12 @@ config_schema:
   - ["pins.builtin", "i", -1, {title: "Builtin button"}]
   - ["datadog", "o", {title: "datadog config"}]
   - ["datadog.api_key", "s", {title: "datadog API key"}]
+  - ["datadog.host_name", "s", {title: "datadog host name"}]
 
 conds:
   - when: mos.platform == "esp32"
     apply:
       config_schema:
-        # - ["pins.humidity", 33]
         - ["pins.temp", 33]
         - ["pins.builtin", 0]
 
@@ -38,7 +38,6 @@ filesystem:
 
 libs:
   - origin: https://github.com/mongoose-os-libs/ca-bundle
-  # - origin: https://github.com/mongoose-os-libs/dash
   - origin: https://github.com/mongoose-os-libs/dht
   - origin: https://github.com/mongoose-os-libs/dns-sd
   - origin: https://github.com/mongoose-os-libs/ds18b20
@@ -48,7 +47,7 @@ libs:
   - origin: https://github.com/mongoose-os-libs/adc
   - origin: https://github.com/mongoose-os-libs/atca
   - origin: https://github.com/mongoose-os-libs/sntp
-    origin: https://github.com/mongoose-os-libs/ethernet
+  - origin: https://github.com/mongoose-os-libs/ethernet
   - origin: https://github.com/mongoose-os-libs/arduino-onewire
   - origin: https://github.com/mongoose-os-libs/rpc-uart
   - origin: https://github.com/mongoose-os-libs/rpc-service-config

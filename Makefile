@@ -1,5 +1,7 @@
 MOS=mos
 
+.PHONY: all build flash configure reboot
+
 build:
 	$(MOS) build
 
