@@ -1,6 +1,7 @@
 load('api_adc.js');
 load('api_arduino_onewire.js');
 load('api_config.js');
+load('api_events.js');
 load('api_gpio.js');
 load('api_http.js');
 load('api_net.js');
@@ -114,4 +115,12 @@ Timer.set(pollInterval, true, function() {
   } else {
     print('no oneWire device found')
   }
+}, null);
+
+Event.addGroupHandler(Net.STATUS_GOT_IP, function(ev, evdata, ud) {
+  // char *mgos_net_ip_to_str(const struct sockaddr_in *sin, char *out);
+  // let f = ffi('int my_func(int, int)');
+  // print('Calling C my_func:', f(1,2));
+  let gotIp =
+  print('== Net event:', 'GOT_IP', ev, evdata, ud);
 }, null);
