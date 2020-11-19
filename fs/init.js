@@ -13,14 +13,20 @@ let deviceId = Cfg.get('device.id');
 let deviceType = 'esp32';
 let metricTags = ['device:' + deviceId, 'deviceType:' + deviceType];
 let oneWirePin = Cfg.get('pins.temp');
-let buttonPin = 0;  // builtin
+let buttonPin = Cfg.get('pins.builtin');  // builtin
+let voltagePin = Cfg.get('pins.voltage');
 let pollInterval = Cfg.get('interval') * 1000;
 let datadogApiKey = Cfg.get('datadog.api_key');
 let datadogHostName = Cfg.get('datadog.host_name');
 
+let r1 = 10000; // r1 of voltage divider (ohm)
+let r2 = 2200; // r2 of voltage divider (ohm)
+
 let ow = OneWire.create(oneWirePin);
 let n = 0;
 let rom = ['01234567'];
+
+ADC.enable(voltagePin);
 
 print('deviceId:', deviceId)
 print('oneWirePin:', oneWirePin)
@@ -37,6 +43,10 @@ let postMetric = function(datadogApiKey, payload) {
       print('datadog post metric error:', err);
     }
   });
+};
+
+let multiplyVoltage = function(rawVoltage) {
+  return (rawVoltage * (r1 + r2) / r2);
 };
 
 GPIO.set_button_handler(buttonPin, GPIO.PULL_UP, GPIO.INT_EDGE_NEG, 50, function(x) {
@@ -115,6 +125,26 @@ Timer.set(pollInterval, true, function() {
   } else {
     print('no oneWire device found')
   }
+
+  // read voltage
+  let adcReadVoltage = ffi('int mgos_adc_read_voltage(int)');
+  let voltage = adcReadVoltage(voltagePin);
+  print('voltage: ', voltage);
+  let voltagePayload = {
+    series: [
+      {
+        metric: 'mos.voltage',
+        points: [[now, multiplyVoltage(voltage)]],
+        host: datadogHostName,
+        tags: metricTags,
+        type: 'gauge'
+      }
+    ]
+  };
+  print('publishing: ' + JSON.stringify(voltagePayload))
+  postMetric(datadogApiKey, voltagePayload);
+
+
 }, null);
 
 Event.addGroupHandler(Net.STATUS_GOT_IP, function(ev, evdata, ud) {
